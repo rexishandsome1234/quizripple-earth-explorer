@@ -1,41 +1,46 @@
+// QuizRipple 地球探險家 — 主應用程式
+// 設計哲學：彩虹地球儀科普樂園風格
+// 單頁應用，透過 GameContext 管理畫面切換
+
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
-import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
+import { GameProvider, useGame } from "./contexts/GameContext";
+import HomeScreen from "./pages/HomeScreen";
+import CategoryScreen from "./pages/CategoryScreen";
+import PlayingScreen from "./pages/PlayingScreen";
+import ResultScreen from "./pages/ResultScreen";
+import LeaderboardScreen from "./pages/LeaderboardScreen";
 
+function GameRouter() {
+  const { state } = useGame();
 
-function Router() {
-  return (
-    <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
-      <Route component={NotFound} />
-    </Switch>
-  );
+  switch (state.screen) {
+    case 'home':
+      return <HomeScreen />;
+    case 'category':
+      return <CategoryScreen />;
+    case 'playing':
+      return <PlayingScreen />;
+    case 'result':
+      return <ResultScreen />;
+    case 'leaderboard':
+      return <LeaderboardScreen />;
+    default:
+      return <HomeScreen />;
+  }
 }
-
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
 
 function App() {
   return (
-    <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        // switchable
-      >
-        <TooltipProvider>
+    <ThemeProvider defaultTheme="light">
+      <TooltipProvider>
+        <GameProvider>
           <Toaster />
-          <Router />
-        </TooltipProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
+          <GameRouter />
+        </GameProvider>
+      </TooltipProvider>
+    </ThemeProvider>
   );
 }
 
